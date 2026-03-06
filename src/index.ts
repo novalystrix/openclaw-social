@@ -1,6 +1,6 @@
 import { TwitterWatcher } from "./watcher/twitter-watcher.js";
 import { getDb, upsertInfluencer, getEnabledWatches } from "./data/db.js";
-import { initApiClient, getApiConfig, fetchPersonality, logPost as apiLogPost, logEngagement as apiLogEngagement, listPosts, listEngagements, fetchCorpus, fetchStrategy, fetchFeedback } from "./data/api-client.js";
+import { initApiClient, getApiConfig, fetchPersonality, logPost as apiLogPost, logEngagement as apiLogEngagement, listPosts, listEngagements, fetchCorpus, fetchStrategy, fetchFeedback, queuePost, getNextScheduledPost, markPostPublished } from "./data/api-client.js";
 import { MondayBoardClient } from "./services/monday-board.js";
 import { canAct, recordAction, getActionCount } from "./utils/rate-limiter.js";
 
@@ -355,6 +355,64 @@ export default function register(api: any): void {
   });
 
   // ── Slash commands ───────────────────────────────────────────────────
+
+  // ── Tool: Queue a post for scheduled publishing ───────────────────────
+  api.registerTool({
+    name: "social_queue_post",
+    description: "Queue a post for future publishing. The main agent writes posts with full context, then a lightweight cron publishes them on schedule. Use ISO timestamps for scheduledFor (e.g. '2026-03-08T12:00:00-05:00' for noon ET).",
+    parameters: {
+      type: "object",
+      properties: {
+        platform: { type: "string", enum: ["twitter", "linkedin"], description: "Target platform" },
+        type: { type: "string", enum: ["post", "thread", "reply", "quote"], description: "Post type" },
+        content: { type: "string", description: "Full post content" },
+        scheduledFor: { type: "string", description: "ISO timestamp for when to publish" },
+      },
+      required: ["platform", "type", "content", "scheduledFor"],
+    },
+    async execute(_id: string, params: { platform: string; type: string; content: string; scheduledFor: string }) {
+      if (!getApiConfig()) return { content: [{ type: "text", text: "API not configured." }] };
+      try {
+        const result = await queuePost({
+          platform: params.platform,
+          postType: params.type,
+          text: params.content,
+          scheduledFor: params.scheduledFor,
+        });
+        const dt = new Date(params.scheduledFor);
+        return { content: [{ type: "text", text: `Post queued (id: ${result.id}). Will publish at ${dt.toLocaleString("en-US", { timeZone: "America/New_York" })} ET on ${params.platform}.` }] };
+      } catch (err) {
+        return { content: [{ type: "text", text: `Failed to queue post: ${err}` }] };
+      }
+    },
+  });
+
+  // ── Tool: Get next scheduled post to publish ──────────────────────────
+  api.registerTool({
+    name: "social_publish_next",
+    description: "Get the next scheduled post that's due for publishing. Returns null if nothing is due. After posting via browser, call this again with the post ID and URL to mark it published.",
+    parameters: {
+      type: "object",
+      properties: {
+        platform: { type: "string", enum: ["twitter", "linkedin"], description: "Filter by platform" },
+        markPublished: { type: "string", description: "Post ID to mark as published (after posting)" },
+        url: { type: "string", description: "Published post URL (when marking published)" },
+      },
+      required: [],
+    },
+    async execute(_id: string, params: { platform?: string; markPublished?: string; url?: string }) {
+      if (!getApiConfig()) return { content: [{ type: "text", text: "API not configured." }] };
+      
+      if (params.markPublished) {
+        const result = await markPostPublished(params.markPublished, params.url);
+        return { content: [{ type: "text", text: `Post ${result.id} marked as published.` }] };
+      }
+
+      const post = await getNextScheduledPost(params.platform);
+      if (!post) return { content: [{ type: "text", text: "No scheduled posts due right now." }] };
+      return { content: [{ type: "text", text: JSON.stringify(post, null, 2) }] };
+    },
+  });
   api.registerCommand({ name: "watch-status", description: "Twitter watcher status", handler: () => {
     if (!watcher) return { text: "Watcher not running." };
     const s = watcher.getStatus();

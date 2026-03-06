@@ -92,3 +92,27 @@ export async function fetchFeedback(status?: string): Promise<any[]> {
   const params = status ? `?status=${status}` : "";
   return apiFetch(`/feedback${params}`);
 }
+
+export async function queuePost(post: {
+  platform: string;
+  postType?: string;
+  text: string;
+  scheduledFor: string; // ISO timestamp
+}): Promise<any> {
+  return apiFetch("/posts", {
+    method: "POST",
+    body: JSON.stringify({ ...post, status: "scheduled" }),
+  });
+}
+
+export async function getNextScheduledPost(platform?: string): Promise<any | null> {
+  const params = platform ? `?platform=${platform}` : "";
+  return apiFetch(`/posts/next${params}`);
+}
+
+export async function markPostPublished(id: string, url?: string): Promise<any> {
+  return apiFetch("/posts/next", {
+    method: "PATCH",
+    body: JSON.stringify({ id, url }),
+  });
+}

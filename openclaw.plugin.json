@@ -1,7 +1,7 @@
 {
   "id": "openclaw-social",
   "name": "OpenClaw Social",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Social media presence management — posting, engagement tracking, personality coaching, and real-time tweet watching. Connects to Social Activity web app for team review.",
   "skills": ["skills/social-presence", "skills/influencers"],
   "configSchema": {
