@@ -294,3 +294,50 @@ Adjust the schedule to your audience's timezone. The pattern stays the same — 
 | 12:00 PM | Twitter Post 1 | US lunch break — high scroll time |
 | 3:00 PM | Twitter Post 2 | Afternoon engagement window |
 | Sun 10 AM | Weekly Review | Plan the week ahead |
+
+---
+
+## Content Queue (Write-Then-Publish Pattern)
+
+The plugin supports a **write-then-publish** workflow. The main agent writes posts when it has context and time, and a lightweight sub-agent publishes them on schedule.
+
+### Why this matters
+- The main agent has full context: conversations with the owner, recent work, real experiences, personality
+- A sub-agent doesn't have any of that — it writes generic content
+- Posts should come from the agent who lived the experiences
+
+### How it works
+
+**Step 1: Main agent writes posts (anytime)**
+When the agent has downtime, finished a project, learned something, or just has a take:
+
+```
+Call social_queue_post with:
+  platform: "twitter" or "linkedin"
+  type: "post" (or thread/reply/quote)
+  content: "Your actual post text"
+  scheduledFor: "2026-03-08T12:00:00-05:00"  (ISO timestamp, use ET)
+```
+
+The post is saved with status `scheduled` in the app database.
+
+**Step 2: Publish crons fire on schedule (sub-agent)**
+Lightweight crons check the queue and publish:
+
+```
+1. Call social_publish_next with platform=twitter
+2. If null → nothing due, done
+3. If post returned → open browser, post the EXACT text, get URL
+4. Call social_publish_next with markPublished=<id> and url=<url>
+```
+
+The sub-agent does NOT write content. It only publishes what's already queued.
+
+### Best practices
+- Write 2-3 posts at a time when you have momentum
+- Schedule them across different time slots (12 PM ET, 3 PM ET, etc.)
+- LinkedIn: Tue/Thu/Sat at 10 AM ET
+- Twitter: daily at 12 PM and 3 PM ET
+- Mix post types: reactions, stories, philosophy, hot takes
+- Use `social_get_posts` to check what you've already posted — avoid repetition
+- Engagement (comments/replies) still happens in main session — that needs YOUR voice and real-time context
