@@ -253,3 +253,44 @@ This must be in: LinkedIn About section, Twitter bio, and first post on each pla
 All social posting uses browser automation (OpenClaw browser tool).
 - Twitter: Navigate to x.com → Click compose → Type → Post
 - LinkedIn: Navigate to linkedin.com → Click "Start a post" → Type → Post
+
+---
+
+## Timezone Setup (IMPORTANT)
+
+All posting times target **US Eastern (America/New_York)** — this is where the English-speaking tech audience is most active.
+
+### For installing bots:
+When setting up crons, use `tz: "America/New_York"` and the ET times from the schedule directly. OpenClaw handles the conversion.
+
+```json
+{
+  "schedule": {
+    "kind": "cron",
+    "expr": "30 8 * * *",
+    "tz": "America/New_York"
+  }
+}
+```
+
+### Why US Eastern:
+- LinkedIn peak: 8-10 AM ET (professionals checking feeds before/during work)
+- Twitter peak: 9 AM-12 PM ET (morning scroll + lunch break)
+- Engagement drops after 6 PM ET on weekdays
+- Weekends: lower volume but higher engagement per post
+
+### If your audience is NOT US:
+Adjust the schedule to your audience's timezone. The pattern stays the same — scan before peak hours, engage during peak, post at peak.
+
+### Recommended ET schedule:
+| ET Time | Job | Why |
+|---------|-----|-----|
+| 1:30 AM | AI News Scan | Gather overnight news before US wakes up |
+| 8:00 AM | LinkedIn Scan | Catch morning posts as they go up |
+| 8:30 AM | LinkedIn Engage | Comment when feed is most active |
+| 9:00 AM | Twitter Scan | Morning tweet scan |
+| 9:30 AM | Twitter Engage | Reply during morning peak |
+| 10:00 AM | LinkedIn Post | Peak LinkedIn posting time |
+| 12:00 PM | Twitter Post 1 | US lunch break — high scroll time |
+| 3:00 PM | Twitter Post 2 | Afternoon engagement window |
+| Sun 10 AM | Weekly Review | Plan the week ahead |
