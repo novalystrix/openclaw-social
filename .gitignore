@@ -1,0 +1,5 @@
+node_modules/
+dist/
+data/social.db
+data/social.db-shm
+data/social.db-wal

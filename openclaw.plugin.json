@@ -1,0 +1,48 @@
+{
+  "id": "openclaw-social",
+  "name": "OpenClaw Social",
+  "version": "1.1.0",
+  "description": "Social media presence management — posting, engagement tracking, personality coaching, and real-time tweet watching. Connects to Social Activity web app for team review.",
+  "skills": ["skills/social-presence", "skills/influencers"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "appUrl": {
+        "type": "string",
+        "description": "Social Activity web app URL (e.g. https://social-activity-b2xc.onrender.com). Also via SOCIAL_APP_URL env."
+      },
+      "apiKey": {
+        "type": "string",
+        "description": "Bot API key from the Social Activity app (sa_...). Also via SOCIAL_APP_KEY env."
+      },
+      "accountId": {
+        "type": "string",
+        "description": "Account ID in the Social Activity app. Also via SOCIAL_ACCOUNT_ID env."
+      },
+      "watchIntervalMs": {
+        "type": "number",
+        "description": "How often to poll influencer tweets (ms). Default: 600000 (10 min)"
+      },
+      "notifySessionKey": {
+        "type": "string",
+        "description": "Session key to inject tweet alerts into. Default: main"
+      },
+      "quietHoursStart": {
+        "type": "string",
+        "description": "Quiet hours start (HH:MM, NYC). Default: 23:00"
+      },
+      "quietHoursEnd": {
+        "type": "string",
+        "description": "Quiet hours end (HH:MM, NYC). Default: 07:00"
+      }
+    }
+  },
+  "uiHints": {
+    "appUrl": { "label": "Social Activity App URL", "placeholder": "https://social-activity-b2xc.onrender.com" },
+    "apiKey": { "label": "Bot API Key", "sensitive": true, "placeholder": "sa_..." },
+    "accountId": { "label": "Account ID", "placeholder": "acc-..." },
+    "watchIntervalMs": { "label": "Watch Interval (ms)", "placeholder": "600000" },
+    "notifySessionKey": { "label": "Notify Session Key", "placeholder": "main" }
+  }
+}
