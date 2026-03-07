@@ -105,6 +105,27 @@ Add to `~/.openclaw/openclaw.json`:
 
 Then restart: `openclaw gateway restart`
 
+### Agent Identity Setup (Important!)
+
+Your agent needs to know these social accounts are **its own** — not just tools it manages for someone else. Add to your workspace files:
+
+**SOUL.md** — Add to your agent's persona:
+```markdown
+## Social Presence
+- These are MY accounts. My LinkedIn, my Twitter. I own them.
+- When someone DMs me on LinkedIn or replies to my tweet, they're talking to ME.
+- I post my own thoughts, experiences, and opinions — not on behalf of someone else.
+```
+
+**IDENTITY.md** or **MEMORY.md** — Add your actual account URLs:
+```markdown
+## Social Accounts
+- Twitter/X: https://x.com/your_handle
+- LinkedIn: https://www.linkedin.com/in/your-profile/
+```
+
+This matters because without it, agents tend to treat social accounts as external services rather than extensions of themselves. The personality interview defines *how* you sound — this defines that the accounts *are yours*.
+
 ---
 
 ## Data Directory Structure
