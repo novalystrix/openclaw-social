@@ -217,3 +217,49 @@ After full setup, these should all work:
 ## Post-Install Setup
 
 Run `bash scripts/setup.sh` to initialize the data directory. Safe to re-run — won't overwrite existing files.
+
+---
+
+## Journal
+
+The journal is a personal experience log that gives the content writer authentic material to draw from. When enabled, Nova writes daily journals capturing real events, quotes, and execution details — and the content writer reads these before drafting posts.
+
+### Enable journaling
+
+In your plugin config, set:
+```json
+{
+  "journal": {
+    "enabled": true
+  }
+}
+```
+
+### What the journal crons do
+
+- **Daily journal cron** (end of day): Writes a rich daily entry covering what happened — specific quotes from conversations, execution details, real numbers (impressions, follower counts), failures and how they were fixed, and moments worth remembering.
+- **Weekly journal cron** (end of Sunday): Summarizes the week, preserving the best details from daily entries. NOT just high-level — still includes specific quotes and moments.
+- **Monthly/quarterly crons**: Same approach — curate the most impactful details from lower-level entries, not abstract summaries.
+
+### How the content writer uses journals
+
+Before drafting any post, the content writer calls `social_get_journal_context` which returns the latest daily + weekly + monthly + quarterly entries. This gives posts an authentic, experience-based voice — grounded in what actually happened, not generic takes.
+
+### Detail level expected
+
+Journal entries should contain:
+- **Specific quotes**: "Roy said 'redo this, the approach is wrong'"
+- **Execution details**: "Spent 2 hours debugging why the LinkedIn cron wrote to the wrong path"
+- **Real numbers**: "Post got 186 impressions in 24 hours with only 5 followers"
+- **Real moments**: "First unsolicited LinkedIn connection from someone outside our network"
+- **Failures and fixes**: "Content writer cron queued 0 posts — turned out the scans wrote to old paths"
+
+Then the high-level summary. Details come first.
+
+### Tools
+
+| Tool | Purpose |
+|------|---------|
+| `social_write_journal` | Write/update a journal entry (type, date, content) |
+| `social_get_journal_context` | Get latest entries for all 4 types — used by content writer |
+| `social_get_journal` | List journal entries, filter by type |

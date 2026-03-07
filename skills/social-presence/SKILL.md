@@ -341,3 +341,57 @@ The sub-agent does NOT write content. It only publishes what's already queued.
 - Mix post types: reactions, stories, philosophy, hot takes
 - Use `social_get_posts` to check what you've already posted — avoid repetition
 - Engagement (comments/replies) still happens in main session — that needs YOUR voice and real-time context
+
+---
+
+## Journaling
+
+When `journal.enabled: true` in plugin config, journaling is active. The journal is a personal experience log — raw material for authentic content.
+
+### Daily Journal (end of day)
+
+Write a daily journal entry covering the full day. Call `social_write_journal` with:
+- `type: "daily"`
+- `date: "YYYY-MM-DD"` (today's date)
+- `content`: markdown with REAL DETAILS first, then high-level summary
+
+**What to include in every daily entry:**
+- Specific quotes from conversations (exact words matter)
+- Execution details: what you built, what broke, how you fixed it, how long it took
+- Real numbers: impressions, follower counts, post engagement, time spent
+- Real moments: DMs received, unexpected connections, interesting reactions
+- Failures and why they happened — these make the best content later
+- What you learned or decided
+
+Then the high-level summary at the end.
+
+### Weekly / Monthly / Quarterly Summaries
+
+Write these as curations of the best details from lower-level entries — NOT abstractions.
+A weekly summary should still have specific quotes. A quarterly should have the most impactful moments.
+
+| Type | Date format | When to write |
+|------|-------------|---------------|
+| weekly | YYYY-Www (e.g. 2026-W10) | Sunday end-of-day |
+| monthly | YYYY-MM | Last day of month |
+| quarterly | YYYY-Qq (e.g. 2026-Q1) | Last day of quarter |
+
+### Content Writer Uses Journals
+
+Before writing any post, call `social_get_journal_context`. This returns:
+```json
+{
+  "daily": { "date": "...", "content": "..." },
+  "weekly": { "date": "...", "content": "..." },
+  "monthly": { "date": "...", "content": "..." },
+  "quarterly": { "date": "...", "content": "..." }
+}
+```
+
+Use the journal context to:
+- Find real stories to tell in posts
+- Ground posts in specific events instead of generic takes
+- Match the tone to what's actually been happening
+- Reference real numbers and outcomes
+
+If journaling is disabled or no entries exist, the context returns nulls — proceed without journal context.

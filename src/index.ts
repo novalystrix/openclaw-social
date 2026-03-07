@@ -1,6 +1,6 @@
 import { TwitterWatcher } from "./watcher/twitter-watcher.js";
 import { getDb, upsertInfluencer, getEnabledWatches } from "./data/db.js";
-import { initApiClient, getApiConfig, fetchPersonality, logPost as apiLogPost, logEngagement as apiLogEngagement, listPosts, listEngagements, fetchCorpus, fetchStrategy, fetchFeedback, queuePost, getNextScheduledPost, markPostPublished } from "./data/api-client.js";
+import { initApiClient, getApiConfig, fetchPersonality, logPost as apiLogPost, logEngagement as apiLogEngagement, listPosts, listEngagements, fetchCorpus, fetchStrategy, fetchFeedback, queuePost, getNextScheduledPost, markPostPublished, writeJournalEntry, listJournalEntries, getJournalContext } from "./data/api-client.js";
 import { MondayBoardClient } from "./services/monday-board.js";
 import { canAct, recordAction, getActionCount } from "./utils/rate-limiter.js";
 
@@ -413,6 +413,99 @@ export default function register(api: any): void {
       return { content: [{ type: "text", text: JSON.stringify(post, null, 2) }] };
     },
   });
+  api.registerCommand({ name: "watch-status", description: "Twitter watcher status", handler: () => {
+    if (!watcher) return { text: "Watcher not running." };
+    const s = watcher.getStatus();
+    const n = watcher.drainNotifications();
+    return { text: n.length === 0 ? `Watching: ${s.watchList.join(", ")}. No new tweets.` : `New tweets:\n${n.map((e: any) => `@${e.handle}: ${e.url}`).join("\n")}` };
+  }});
+
+  api.registerCommand({ name: "rate-status", description: "Action counts this hour", handler: () => {
+    return { text: `LinkedIn: ${getActionCount("linkedin")}/30\nTwitter: ${getActionCount("twitter")}/120` };
+  }});
+
+  api.registerCommand({ name: "watch-list", description: "Watched Twitter accounts", handler: () => {
+    const watches = getEnabledWatches(getDb());
+    return { text: watches.length === 0 ? "No watches." : watches.map(w => `@${w.handle} — last: ${w.last_checked_at ?? "never"}`).join("\n") };
+  }});
+
+  // ── Tool: Write a journal entry ──────────────────────────────────────
+  api.registerTool({
+    name: "social_write_journal",
+    description: "Write or update a personal experience journal entry. Use this to document real events, quotes, execution details, failures, fixes, and specific numbers — not just high-level summaries. The content writer reads these journals to create authentic posts.",
+    parameters: {
+      type: "object",
+      properties: {
+        type: { type: "string", enum: ["daily", "weekly", "monthly", "quarterly"], description: "Journal entry type" },
+        date: { type: "string", description: "Date string: YYYY-MM-DD for daily, YYYY-Www for weekly, YYYY-MM for monthly, YYYY-Qq for quarterly" },
+        content: { type: "string", description: "Full markdown content of the journal entry. Include specific quotes, execution details, real numbers, failures and fixes. Both detail-level AND high-level context." },
+      },
+      required: ["type", "date", "content"],
+    },
+    async execute(_id: string, params: { type: string; date: string; content: string }) {
+      const journalEnabled = cfg.journal?.enabled ?? false;
+      if (!journalEnabled) {
+        return { content: [{ type: "text", text: "Journaling is disabled. Enable it in plugin config (set journal.enabled: true)." }] };
+      }
+      if (!getApiConfig()) {
+        return { content: [{ type: "text", text: "API not configured. Set SOCIAL_APP_URL, SOCIAL_APP_KEY, SOCIAL_ACCOUNT_ID." }] };
+      }
+      const entry = await writeJournalEntry({ type: params.type, date: params.date, content: params.content });
+      return { content: [{ type: "text", text: `Journal entry saved (id: ${entry.id}, type: ${entry.type}, date: ${entry.date}).` }] };
+    },
+  });
+
+  // ── Tool: Get journal context for content writing ─────────────────────
+  api.registerTool({
+    name: "social_get_journal_context",
+    description: "Get the latest journal entries for content writing context. Returns the most recent daily, weekly, monthly, and quarterly entries. The content writer uses this to create authentic, experience-based posts.",
+    parameters: { type: "object", properties: {}, required: [] },
+    async execute(_id: string, _params: Record<string, never>) {
+      const journalEnabled = cfg.journal?.enabled ?? false;
+      if (!journalEnabled || !getApiConfig()) {
+        return { content: [{ type: "text", text: JSON.stringify({ daily: null, weekly: null, monthly: null, quarterly: null }) }] };
+      }
+      const context = await getJournalContext();
+      const parts: string[] = [];
+      for (const [type, entry] of Object.entries(context)) {
+        if (entry && entry.content) {
+          const label = type.charAt(0).toUpperCase() + type.slice(1);
+          parts.push(`## ${label} (${entry.date})\n${entry.content}`);
+        }
+      }
+      if (parts.length === 0) {
+        return { content: [{ type: "text", text: "No journal entries yet." }] };
+      }
+      return { content: [{ type: "text", text: parts.join("\n\n---\n\n") }] };
+    },
+  });
+
+  // ── Tool: List journal entries ────────────────────────────────────────
+  api.registerTool({
+    name: "social_get_journal",
+    description: "List journal entries from the Social Activity app.",
+    parameters: {
+      type: "object",
+      properties: {
+        type: { type: "string", enum: ["daily", "weekly", "monthly", "quarterly"], description: "Filter by entry type" },
+        limit: { type: "number", description: "Max entries to return (default 10)" },
+      },
+      required: [],
+    },
+    async execute(_id: string, params: { type?: string; limit?: number }) {
+      if (!getApiConfig()) {
+        return { content: [{ type: "text", text: "API not configured." }] };
+      }
+      const entries = await listJournalEntries(params.type, params.limit);
+      if (!entries.length) return { content: [{ type: "text", text: "No journal entries found." }] };
+      const text = entries.map((e: any) => {
+        const preview = e.content.slice(0, 200) + (e.content.length > 200 ? "..." : "");
+        return `[${e.type}] ${e.date}\n${preview}`;
+      }).join("\n\n---\n\n");
+      return { content: [{ type: "text", text: text }] };
+    },
+  });
+
   api.registerCommand({ name: "watch-status", description: "Twitter watcher status", handler: () => {
     if (!watcher) return { text: "Watcher not running." };
     const s = watcher.getStatus();

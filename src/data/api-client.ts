@@ -116,3 +116,27 @@ export async function markPostPublished(id: string, url?: string): Promise<any> 
     body: JSON.stringify({ id, url }),
   });
 }
+
+export async function writeJournalEntry(entry: {
+  type: string;
+  date: string;
+  content: string;
+}): Promise<any> {
+  return apiFetch("/journal", { method: "POST", body: JSON.stringify(entry) });
+}
+
+export async function listJournalEntries(type?: string, limit?: number): Promise<any[]> {
+  const params = new URLSearchParams();
+  if (type) params.set("type", type);
+  if (limit) params.set("limit", String(limit));
+  return apiFetch(`/journal?${params}`);
+}
+
+export async function getJournalContext(): Promise<{
+  daily: { date: string; content: string } | null;
+  weekly: { date: string; content: string } | null;
+  monthly: { date: string; content: string } | null;
+  quarterly: { date: string; content: string } | null;
+}> {
+  return apiFetch("/journal/context");
+}

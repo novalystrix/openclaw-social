@@ -2,7 +2,7 @@
   "id": "openclaw-social",
   "name": "OpenClaw Social",
   "version": "1.2.0",
-  "description": "Social media presence management — posting, engagement tracking, personality coaching, and real-time tweet watching. Connects to Social Activity web app for team review.",
+  "description": "Social media presence management \u2014 posting, engagement tracking, personality coaching, and real-time tweet watching. Connects to Social Activity web app for team review.",
   "skills": [
     "skills/social-presence",
     "skills/influencers"
@@ -38,6 +38,17 @@
       "quietHoursEnd": {
         "type": "string",
         "description": "Quiet hours end (HH:MM, NYC). Default: 07:00"
+      },
+      "journal": {
+        "type": "object",
+        "description": "Personal experience journal. When enabled, the agent writes daily journals and periodic summaries. Content writer uses these for authentic, experience-based posts.",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable/disable journaling. When disabled, journal crons no-op and context returns empty.",
+            "default": false
+          }
+        }
       }
     }
   },
@@ -64,6 +75,6 @@
       "placeholder": "main"
     }
   },
-  "postInstall": "Run: bash scripts/setup.sh — creates the data/ directory structure for scan results and local caches.",
-  "dataDir": "data/ — scan results, post queues, and SQLite rate limiter. Cron jobs write here; content writer reads from here. Do NOT use workspace files for scan output."
+  "postInstall": "Run: bash scripts/setup.sh \u2014 creates the data/ directory structure for scan results and local caches.",
+  "dataDir": "data/ \u2014 scan results, post queues, and SQLite rate limiter. Cron jobs write here; content writer reads from here. Do NOT use workspace files for scan output."
 }
