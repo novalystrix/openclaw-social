@@ -6,7 +6,7 @@ import { canAct, recordAction, getActionCount } from "./utils/rate-limiter.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function register(api: any): void {
-  const cfg = api.config?.plugins?.entries?.["openclaw-social"]?.config ?? {};
+  const cfg = api.config?.plugins?.entries?.["openclaw-agentpresence"]?.config ?? {};
   const mondayToken = process.env["MONDAY_API_TOKEN"];
   const tavilyKey = process.env["TAVILY_API_KEY"] ?? "";
 
@@ -17,19 +17,19 @@ export default function register(api: any): void {
 
   if (appUrl && apiKey && accountId) {
     initApiClient({ appUrl, apiKey, accountId });
-    api.logger.info(`openclaw-social: API client initialized (${appUrl}, account: ${accountId})`);
+    api.logger.info(`openclaw-agentpresence: API client initialized (${appUrl}, account: ${accountId})`);
   } else {
-    api.logger.warn("openclaw-social: SOCIAL_APP_URL/KEY/ACCOUNT_ID not set — API features disabled, using local SQLite only");
+    api.logger.warn("openclaw-agentpresence: SOCIAL_APP_URL/KEY/ACCOUNT_ID not set — API features disabled, using local SQLite only");
   }
 
   // ── Background service: Twitter watcher ──────────────────────────────
   let watcher: TwitterWatcher | null = null;
 
   api.registerService({
-    id: "openclaw-social.watcher",
+    id: "openclaw-agentpresence.watcher",
     start() {
       if (!tavilyKey) {
-        api.logger.warn("openclaw-social: TAVILY_API_KEY not set — watcher disabled");
+        api.logger.warn("openclaw-agentpresence: TAVILY_API_KEY not set — watcher disabled");
         return;
       }
       watcher = new TwitterWatcher(
@@ -106,7 +106,7 @@ export default function register(api: any): void {
             status: "published",
           });
         } catch (err) {
-          api.logger.warn(`openclaw-social: API log failed: ${err}`);
+          api.logger.warn(`openclaw-agentpresence: API log failed: ${err}`);
         }
       }
 
@@ -160,7 +160,7 @@ export default function register(api: any): void {
             myText: params.content,
           });
         } catch (err) {
-          api.logger.warn(`openclaw-social: API engagement log failed: ${err}`);
+          api.logger.warn(`openclaw-agentpresence: API engagement log failed: ${err}`);
         }
       }
 

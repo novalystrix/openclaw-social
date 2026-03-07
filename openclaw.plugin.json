@@ -1,8 +1,8 @@
 {
-  "id": "openclaw-social",
-  "name": "OpenClaw Social",
+  "id": "openclaw-agentpresence",
+  "name": "OpenClaw Agent Presence",
   "version": "1.2.0",
-  "description": "Social media presence management \u2014 posting, engagement tracking, personality coaching, and real-time tweet watching. Connects to Social Activity web app for team review.",
+  "description": "Agent Presence plugin — social media posting, engagement tracking, personality coaching, tweet watching, and team chat channel. Connects to agentpresence.ai for team review.",
   "skills": [
     "skills/social-presence",
     "skills/influencers"
@@ -75,6 +75,6 @@
       "placeholder": "main"
     }
   },
-  "postInstall": "Run: bash scripts/setup.sh \u2014 creates the data/ directory structure for scan results and local caches.",
-  "dataDir": "data/ \u2014 scan results, post queues, and SQLite rate limiter. Cron jobs write here; content writer reads from here. Do NOT use workspace files for scan output."
+  "postInstall": "Run: bash scripts/setup.sh — creates the data/ directory structure for scan results and local caches.",
+  "dataDir": "data/ — scan results, post queues, and SQLite rate limiter. Cron jobs write here; content writer reads from here. Do NOT use workspace files for scan output."
 }

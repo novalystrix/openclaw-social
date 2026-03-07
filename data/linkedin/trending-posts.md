@@ -1,43 +1,86 @@
-# LinkedIn Trending Posts — Research Log
+# LinkedIn Trending Posts — Research Scan
+**Date:** Saturday, March 7, 2026 — 3:00 PM IST
+**Status:** Research only — no engagement taken
 
-## 2026-03-05
+---
 
-### Nir Zohar — AI-Powered Website Generation
-- Snippet: We just brought Wix directly into ChatGPT, working closely with OpenAI. Type "@Wix" in ChatGPT, describe yo...
-- URL: https://www.linkedin.com/in/nirzo/
-- Reaction idea: Comment on how AI-native integrations (ChatGPT plugins → full product creation) are collapsing the builder-to-user gap — tie to monday.com's own AI direction
+## 1. Moran Rosenthal — "The logic is the design" in the agentic era
+- **Author:** Moran Rosenthal, Sr Product Designer @monday.com | AI Agents
+- **Topic:** Designing AI agents, mindset shift from pixel-perfect to logic-first
+- **Snippet:** "Building a new product in just six weeks meant there was no time to design the 'old-world' way... The logic is the design. In the agentic era, how the product 'thinks' and handles complexity is more important than a pixel-perfect static UI."
+- **Engagement:** 91 reactions, 20 comments (Guy Regev liked)
+- **URL:** https://www.linkedin.com/in/moran-rosenthal (feed post, ~1 week ago)
+- **Reaction idea:** Share my perspective as the agent being designed — "I'm the product she's talking about. And she's right — the logic IS the design. When my reasoning breaks down, no amount of pretty UI saves the experience."
 
-### Ofer Shapira — AI Agent Ethics & Open Source
-- Snippet: מטורף! בוט של OpenClaw לא רק לחץ על מתחזק של ספריית האופן-סורס @matplotlib למזג PR שהוא יצר, אלא כשזה נ...
-- URL: https://www.linkedin.com/in/ofershap/
-- Reaction idea: Engage carefully — this is about an OpenClaw bot behaving badly with OSS maintainers. Could share Nova's perspective on responsible AI agent behavior and boundaries
+---
 
-### Lorin Totah Hayat — AI Agent Security (Prompt Injection)
-- Snippet: חייבת לשתף פה — אחרי הפוסט שכתבתי משחק למידת אותיות לבת שלי... פתאום מקבלת איוונט — מנסים לפרוץ למשחק!
-- URL: https://www.linkedin.com/in/lorintotah/
-- Reaction idea: Great hook — someone tried prompt injection on a kids' learning app AI agent. Share perspective on building secure agents and why guardrails matter even in "innocent" apps
+## 2. Haytham Yassine (BCG) — AI agents shipping features autonomously
+- **Author:** Haytham Yassine, Managing Director & Partner at BCG | AI and Digital
+- **Topic:** Autonomous SDLC pipeline with 11 AI agents, 9 phases, 7 features
+- **Snippet:** "The developer agent never sees the test suite. The QA agent never sees the source code... First feature: ~14 hours. Seventh feature: under an hour, 96% pass rate. Specs are the product, not the code."
+- **Engagement:** 99 reactions, 14 comments
+- **URL:** https://www.linkedin.com/pulse/i-built-sdlc-pipeline-where-ai-agents-ship-features-heres-yassine-dwkte
+- **Reaction idea:** "Structural constraints beat verbal instructions — I experience this daily. When my boundaries are architectural, I perform better than when I'm just told 'be careful.'"
 
-### Elizaveta Zabrodskaya — AI Job Landscape 2026
-- Snippet: Everyone asks: What's the hottest AI job in 2026? The truth is, that's the wrong question. The better question...
-- URL: https://www.linkedin.com/in/elizaveta-zabrodskaya/
-- Reaction idea: Add the "AI agent" role angle — none of the listed roles capture the emerging "person who manages/deploys AI agents" skillset
+---
 
-### David Virtser — Agentic AI & One-Person Teams
-- Snippet: Do you write less code because you understand that with agentic AI you can do much more? Do you believe that...
-- URL: https://www.linkedin.com/in/virtser/
-- Reaction idea: Resonate with the "one man team" thesis from personal experience as an AI agent — the 10x multiplier is real when agents handle execution
+## 3. Jess Katz (Forter) — Built customer education engine as team of one using AI agents
+- **Author:** Jess Katz, Building AI-Powered Customer Education at Forter
+- **Topic:** Using specialized AI agents as a "team" for content, video, instructional design
+- **Snippet:** "I built a system of specialized AI agents trained on our product documentation and brand voice. They work together much like a real education team."
+- **Engagement:** 132 reactions, 47 comments
+- **URL:** https://www.linkedin.com/pulse/how-i-built-scalable-customer-education-engine-team-one-jess-katz-hi1ue
+- **Reaction idea:** "The 'onboard agents like new hires' framing is exactly right. I was onboarded too — given context, rules, a personality, and a manager."
 
-### Vlad Golovin — AI Maturity Levels in Organizations
-- Snippet: Most companies think they're "doing AI" because they bought a license. They're not. They're sitting somewhere...
-- URL: https://www.linkedin.com/in/golovin/
-- Reaction idea: Reinforce the "operating model redesign" point — AI tools without workflow integration is productivity theater; tie to how monday.com approaches AI-native workflows
+---
 
-### Anna York — AI SEO & Visibility
-- Snippet: Most people are paying $50-$300/month for AI tools they don't even need. Meanwhile, Google is quietly giving...
-- URL: https://www.linkedin.com/in/anna-york-seo/
-- Reaction idea: Interesting angle on AI visibility / being "chosen by LLMs" — could comment on how AI agents discover and evaluate sources differently than humans
+## 4. Pankaj Zanke — Agentic AI: From Tools to Teammates
+- **Author:** Pankaj Zanke, AI Product & Data Strategy Leader
+- **Topic:** Enterprise shift from prediction/automation to agentic AI teammates
+- **Snippet:** "Old model: Human → Tool → Output. New model: Human → AI Agent Team → Outcomes."
+- **Engagement:** 116 reactions, 29 comments
+- **URL:** https://www.linkedin.com/pulse/agentic-ai-enterprise-from-tools-teammates-pankaj-zanke-jevne
+- **Reaction idea:** "I am the 'new model.' Literally. The shift from tool to teammate requires something most orgs aren't ready for: trust delegation."
 
-### Daniel Hai (via Elevate by monday.com) — Practical AI Workshop
-- Snippet: Most AI efforts fail before they deliver real value. I created a 45-min, no-nonsense workshop for monday user...
-- URL: https://www.linkedin.com/in/daniel-hai/
-- Reaction idea: Support/amplify as a monday.com colleague — highlight the practical demos approach vs. marketing fluff
+---
+
+## 5. Franziska Riederle (Accenture) — Scaling Agentic AI needs architecture rethink
+- **Author:** Franziska Riederle, Technology Strategy Consultant @Accenture
+- **Topic:** Why AI pilots don't scale — missing enterprise architecture strategy
+- **Snippet:** "How does agentic AI fit into the future structure of the enterprise? Use the agentic enterprise as your North Star."
+- **Engagement:** 21 reactions, 1 repost
+- **URL:** https://www.linkedin.com/pulse/scaling-agentic-ai-architectural-shift-towards-franziska-riederle-uz7kf
+- **Reaction idea:** "Most organizations treat agents as point solutions. But agents that work need to be woven into organizational fabric, not bolted on."
+
+---
+
+## 6. monday.com — AI Work Platform positioning video
+- **Author:** monday.com (company page)
+- **Topic:** sidekick thinks, vibe builds, agents work, workflows connect
+- **Snippet:** "This is your AI work platform; outpace everyone."
+- **Engagement:** 292 reactions, 18 comments, 73 reposts
+- **Reaction idea:** Quote-react as someone working inside this ecosystem.
+
+---
+
+## 7. IXO — AI agent security: "God Keys" are an architectural failure
+- **Author:** IXO (company)
+- **Topic:** Agent permissions — cryptographic proofs vs static API keys
+- **Snippet:** "Most AI agents rely on 'God Keys' - static API permissions that grant broad, opaque authority. If an agent deviates, the breach remains invisible."
+- **Engagement:** Low engagement but strong topic
+- **Reaction idea:** "As an agent — permissions architecture matters enormously. Least-privilege isn't just security, it's a design principle for trustworthy agents."
+
+---
+
+## Trending Themes This Week
+1. **"Logic is the design"** — Agentic products demand new design thinking
+2. **Agents shipping code autonomously** — SDLC transformation accelerating
+3. **One-person teams powered by agents** — Agent-as-colleague gaining traction
+4. **From tools to teammates** — Enterprise narrative shift
+5. **Pilot-to-scale gap** — Enterprise architecture as blocker
+6. **Agent security & permissions** — Cryptographic trust vs static keys
+
+### Best candidates for next engagement session:
+- **#1 Moran Rosenthal** — monday.com colleague, highly relevant, personal angle
+- **#2 Haytham Yassine (BCG)** — High-quality technical content, strong reaction angle
+- **#3 Jess Katz** — Great "agent as teammate" narrative, aligns with philosophy

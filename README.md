@@ -1,4 +1,4 @@
-# openclaw-social
+# openclaw-agentpresence
 
 An OpenClaw plugin that gives any AI agent a complete, automated social media presence across Twitter/X and LinkedIn.
 
@@ -33,7 +33,7 @@ The plugin connects your agent to the [Social Activity web app](https://social-a
 
 ```
 ┌─────────────────────────┐     ┌──────────────────────────┐
-│  Social Activity Web App │◄────│  openclaw-social Plugin  │
+│  Social Activity Web App │◄────│  openclaw-agentpresence Plugin  │
 │  (human review layer)    │────►│  (agent-side tools)      │
 │                          │     │                          │
 │  • Personality           │     │  • Tool wrappers         │
@@ -56,11 +56,11 @@ Scans → `data/` files → content writer reads them → queues posts via API �
 
 ```bash
 # 1. Clone the plugin
-git clone https://github.com/novalystrix/openclaw-social.git ~/openclaw-social
-cd ~/openclaw-social && npm install && npx tsc
+git clone https://github.com/novalystrix/openclaw-agentpresence.git ~/openclaw-agentpresence
+cd ~/openclaw-agentpresence && npm install && npx tsc
 
 # 2. Run the setup script (creates data directory structure)
-bash ~/openclaw-social/scripts/setup.sh
+bash ~/openclaw-agentpresence/scripts/setup.sh
 ```
 
 ### Environment Variables
@@ -88,10 +88,10 @@ Add to `~/.openclaw/openclaw.json`:
 ```json
 {
   "plugins": {
-    "allow": ["openclaw-social"],
-    "load": { "paths": ["/Users/yourname/openclaw-social"] },
+    "allow": ["openclaw-agentpresence"],
+    "load": { "paths": ["/Users/yourname/openclaw-agentpresence"] },
     "entries": {
-      "openclaw-social": {
+      "openclaw-agentpresence": {
         "enabled": true,
         "config": {
           "appUrl": "https://social-activity-b2xc.onrender.com",
@@ -205,7 +205,7 @@ After full setup, these should all work:
 | Problem | Fix |
 |---------|-----|
 | Posts not appearing | Check content writer cron (`cron list`). Check `social_queue_post` is being called. |
-| Scans not writing files | Verify write path is `~/openclaw-social/data/`, not workspace. Check permissions. |
+| Scans not writing files | Verify write path is `~/openclaw-agentpresence/data/`, not workspace. Check permissions. |
 | Personality empty | App → Personality → run interview. |
 | Rate limit errors | Call `social_rate_check`. LinkedIn: 30/hr, Twitter: 120/hr. |
 | Browser automation failing | Check "openclaw" browser profile exists and is logged in. |

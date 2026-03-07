@@ -1,11 +1,13 @@
 {
-  "name": "openclaw-social",
+  "name": "openclaw-agentpresence",
   "version": "1.0.0",
-  "description": "OpenClaw plugin for Novalystrix social media management",
+  "description": "OpenClaw plugin for Agent Presence — social media management, engagement tracking, personality coaching, and chat channel.",
   "type": "module",
   "main": "src/index.ts",
   "openclaw": {
-    "extensions": ["./src/index.ts"]
+    "extensions": [
+      "./src/index.ts"
+    ]
   },
   "scripts": {
     "build": "tsc",

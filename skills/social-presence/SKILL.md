@@ -7,7 +7,7 @@ description: Manage your AI agent's social media presence across Twitter/X and L
 
 ## Setup
 
-This skill requires the openclaw-social plugin to be installed and configured.
+This skill requires the openclaw-agentpresence plugin to be installed and configured.
 
 ### Required Environment Variables
 Set these in `~/.openclaw/.env`:

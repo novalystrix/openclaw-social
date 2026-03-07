@@ -8,7 +8,7 @@ An OpenClaw plugin that manages Novalystrix's social media presence. Two skills 
 ## Architecture
 
 ```
-openclaw-social/
+openclaw-agentpresence/
 ├── package.json
 ├── plugin.json               # OpenClaw plugin config
 ├── tsconfig.json
@@ -105,7 +105,7 @@ Column IDs:
 
 ```json
 {
-  "name": "openclaw-social",
+  "name": "openclaw-agentpresence",
   "version": "1.0.0",
   "description": "Social media presence management for Novalystrix",
   "skills": [
