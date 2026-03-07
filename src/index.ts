@@ -1,6 +1,6 @@
 import { TwitterWatcher } from "./watcher/twitter-watcher.js";
 import { getDb, upsertInfluencer, getEnabledWatches } from "./data/db.js";
-import { initApiClient, getApiConfig, fetchPersonality, logPost as apiLogPost, logEngagement as apiLogEngagement, listPosts, listEngagements, fetchCorpus, fetchStrategy, fetchFeedback, queuePost, getNextScheduledPost, markPostPublished, writeJournalEntry, listJournalEntries, getJournalContext, chatPostMessage, chatRegisterWebhook } from "./data/api-client.js";
+import { initApiClient, getApiConfig, fetchPersonality, logPost as apiLogPost, logEngagement as apiLogEngagement, listPosts, listEngagements, fetchCorpus, fetchStrategy, fetchFeedback, queuePost, getNextScheduledPost, markPostPublished, writeJournalEntry, listJournalEntries, getJournalContext, chatPostMessage, chatRegisterWebhook, fetchGuardrails, checkGuardrails } from "./data/api-client.js";
 import { MondayBoardClient } from "./services/monday-board.js";
 import { canAct, recordAction, getActionCount } from "./utils/rate-limiter.js";
 
@@ -98,6 +98,14 @@ export default function register(api: any): void {
       // Log to web app API
       if (getApiConfig()) {
         try {
+          // Guardrail check
+          const _gr = await fetchGuardrails();
+          const _gv = checkGuardrails(params.content, _gr);
+          const _gb = _gv.filter((v: any) => v.guardrail.severity === "block");
+          if (_gb.length > 0) {
+            const msg = "🛑 POST BLOCKED by guardrails:\n" + _gb.map((v: any) => "- " + v.guardrail.name + ": matched \"" + v.match + "\"").join("\n") + "\n\nThe post was NOT logged.";
+            return { content: [{ type: "text", text: msg }] };
+          }
           apiResult = await apiLogPost({
             platform: params.platform,
             postType: params.type,
@@ -373,6 +381,19 @@ export default function register(api: any): void {
     async execute(_id: string, params: { platform: string; type: string; content: string; scheduledFor: string }) {
       if (!getApiConfig()) return { content: [{ type: "text", text: "API not configured." }] };
       try {
+        // Pre-publish guardrail check
+        const guardrails = await fetchGuardrails();
+        const violations = checkGuardrails(params.content, guardrails);
+        const blocks = violations.filter((v: any) => v.guardrail.severity === "block");
+        const warns = violations.filter((v: any) => v.guardrail.severity === "warn");
+        if (blocks.length > 0) {
+          const msg = "\ud83d\uded1 POST BLOCKED by guardrails:\n" + blocks.map((v: any) => "- " + v.guardrail.name + ": matched \"" + v.match + "\"").join("\n") + "\n\nThe post was NOT queued. Fix the content and try again.";
+          return { content: [{ type: "text", text: msg }] };
+        }
+        let warnText = "";
+        if (warns.length > 0) {
+          warnText = "\n\n\u26a0\ufe0f Guardrail warnings:\n" + warns.map((v: any) => "- " + v.guardrail.name + ": matched \"" + v.match + "\"").join("\n");
+        }
         const result = await queuePost({
           platform: params.platform,
           postType: params.type,

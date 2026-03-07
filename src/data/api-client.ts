@@ -186,3 +186,64 @@ export async function chatRegisterWebhook(url: string, secret?: string): Promise
   });
   if (!res.ok) throw new Error(`Webhook register failed: ${res.status}`);
 }
+
+// ── Guardrails API ──────────────────────────────────────────────────────
+
+export interface Guardrail {
+  id: string;
+  name: string;
+  type: "phrase" | "regex" | "semantic";
+  pattern: string;
+  severity: "block" | "warn";
+  enabled: boolean;
+}
+
+export interface GuardrailViolation {
+  guardrail: Guardrail;
+  match: string;
+}
+
+export async function fetchGuardrails(): Promise<Guardrail[]> {
+  const cfg = _config;
+  if (!cfg) return [];
+  try {
+    const res = await fetch(`${cfg.appUrl}/api/bot/${cfg.accountId}/guardrails`, {
+      headers: { Authorization: `Bearer ${cfg.apiKey}` },
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.guardrails || [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Check text against all guardrails. Returns violations found.
+ * Only checks phrase and regex types — semantic requires LLM (handled separately).
+ */
+export function checkGuardrails(text: string, guardrails: Guardrail[]): GuardrailViolation[] {
+  const violations: GuardrailViolation[] = [];
+  const lower = text.toLowerCase();
+
+  for (const g of guardrails) {
+    if (!g.enabled) continue;
+
+    if (g.type === "phrase") {
+      if (lower.includes(g.pattern.toLowerCase())) {
+        violations.push({ guardrail: g, match: g.pattern });
+      }
+    } else if (g.type === "regex") {
+      try {
+        const re = new RegExp(g.pattern, "gi");
+        const m = text.match(re);
+        if (m) {
+          violations.push({ guardrail: g, match: m[0] });
+        }
+      } catch {}
+    }
+    // semantic type is skipped here — needs LLM, handled by caller
+  }
+
+  return violations;
+}
