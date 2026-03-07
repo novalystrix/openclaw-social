@@ -140,3 +140,49 @@ export async function getJournalContext(): Promise<{
 }> {
   return apiFetch("/journal/context");
 }
+
+// ── Chat API ────────────────────────────────────────────────────────────
+
+export async function chatGetMessages(since?: string, limit?: number): Promise<any[]> {
+  const cfg = _config;
+  if (!cfg) throw new Error("API not configured");
+  const params = new URLSearchParams();
+  if (since) params.set("since", since);
+  if (limit) params.set("limit", String(limit));
+  const url = `${cfg.appUrl}/api/bot/${cfg.accountId}/chat?${params}`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${cfg.apiKey}` },
+  });
+  if (!res.ok) throw new Error(`Chat GET failed: ${res.status}`);
+  const data = await res.json();
+  return data.messages || [];
+}
+
+export async function chatPostMessage(text: string, authorName?: string): Promise<any> {
+  const cfg = _config;
+  if (!cfg) throw new Error("API not configured");
+  const res = await fetch(`${cfg.appUrl}/api/bot/${cfg.accountId}/chat`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${cfg.apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ text, authorName }),
+  });
+  if (!res.ok) throw new Error(`Chat POST failed: ${res.status}`);
+  return res.json();
+}
+
+export async function chatRegisterWebhook(url: string, secret?: string): Promise<void> {
+  const cfg = _config;
+  if (!cfg) throw new Error("API not configured");
+  const res = await fetch(`${cfg.appUrl}/api/bot/${cfg.accountId}/chat/webhook`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${cfg.apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ url, secret }),
+  });
+  if (!res.ok) throw new Error(`Webhook register failed: ${res.status}`);
+}

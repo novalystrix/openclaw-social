@@ -49,6 +49,10 @@
             "default": false
           }
         }
+      },
+      "webhookBaseUrl": {
+        "type": "string",
+        "description": "Base URL for webhook callbacks (e.g. https://your-tailscale-url.ts.net). Agent Presence will POST chat messages here. Also via OPENCLAW_WEBHOOK_URL env."
       }
     }
   },
@@ -73,6 +77,10 @@
     "notifySessionKey": {
       "label": "Notify Session Key",
       "placeholder": "main"
+    },
+    "webhookBaseUrl": {
+      "label": "Webhook Base URL",
+      "placeholder": "https://your-gateway-url"
     }
   },
   "postInstall": "Run: bash scripts/setup.sh — creates the data/ directory structure for scan results and local caches.",

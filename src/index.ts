@@ -1,6 +1,6 @@
 import { TwitterWatcher } from "./watcher/twitter-watcher.js";
 import { getDb, upsertInfluencer, getEnabledWatches } from "./data/db.js";
-import { initApiClient, getApiConfig, fetchPersonality, logPost as apiLogPost, logEngagement as apiLogEngagement, listPosts, listEngagements, fetchCorpus, fetchStrategy, fetchFeedback, queuePost, getNextScheduledPost, markPostPublished, writeJournalEntry, listJournalEntries, getJournalContext } from "./data/api-client.js";
+import { initApiClient, getApiConfig, fetchPersonality, logPost as apiLogPost, logEngagement as apiLogEngagement, listPosts, listEngagements, fetchCorpus, fetchStrategy, fetchFeedback, queuePost, getNextScheduledPost, markPostPublished, writeJournalEntry, listJournalEntries, getJournalContext, chatPostMessage, chatRegisterWebhook } from "./data/api-client.js";
 import { MondayBoardClient } from "./services/monday-board.js";
 import { canAct, recordAction, getActionCount } from "./utils/rate-limiter.js";
 
@@ -521,4 +521,126 @@ export default function register(api: any): void {
     const watches = getEnabledWatches(getDb());
     return { text: watches.length === 0 ? "No watches." : watches.map(w => `@${w.handle} — last: ${w.last_checked_at ?? "never"}`).join("\n") };
   }});
+
+  // ── Chat Channel: Agent Presence as a communication channel ──────────
+
+  const chatWebhookSecret = `ap_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  let chatWebhookRegistered = false;
+
+  // Import chat functions
+
+  // HTTP route: receives webhook POSTs from Agent Presence when humans type in chat
+  api.registerHttpRoute({
+    path: "/api/agentpresence/inbound",
+    async handler(req: any, res: any) {
+      // Only accept POST
+      if (req.method !== "POST") {
+        res.writeHead(405).end("Method Not Allowed");
+        return;
+      }
+
+      // Verify webhook secret
+      const secret = req.headers["x-webhook-secret"];
+      if (secret !== chatWebhookSecret) {
+        res.writeHead(401).end("Unauthorized");
+        return;
+      }
+
+      // Parse body
+      let body = "";
+      for await (const chunk of req) body += chunk;
+      let payload: any;
+      try {
+        payload = JSON.parse(body);
+      } catch {
+        res.writeHead(400).end("Bad JSON");
+        return;
+      }
+
+      const { event, message } = payload;
+      if (event !== "chat.message" || !message?.text) {
+        res.writeHead(200).end("ignored");
+        return;
+      }
+
+      api.logger.info(`agentpresence chat: message from ${message.authorName}: "${message.text.slice(0, 80)}"`);
+
+      // Inject as system event into the main session
+      // Format it as a user message from the Agent Presence chat
+      const eventText = `[Agent Presence Chat] ${message.authorName}: ${message.text}`;
+      try {
+        api.runtime.system.enqueueSystemEvent({
+          text: eventText,
+          sessionKey: cfg.notifySessionKey ?? "main",
+          source: "agentpresence-chat",
+        });
+      } catch (err) {
+        api.logger.error(`agentpresence chat: failed to enqueue: ${err}`);
+      }
+
+      res.writeHead(200, { "Content-Type": "application/json" }).end(JSON.stringify({ ok: true }));
+    },
+  });
+
+  // Service: register webhook on startup + send welcome message
+  api.registerService({
+    id: "openclaw-agentpresence.chat-channel",
+    async start() {
+      if (!getApiConfig()) {
+        api.logger.warn("agentpresence chat: API not configured, chat channel disabled");
+        return;
+      }
+
+      // Determine our webhook URL from gateway config
+      const gatewayPort = api.config?.gateway?.port ?? 18789;
+      // Use Tailscale funnel URL if available, otherwise localhost
+      const baseUrl = cfg.webhookBaseUrl
+        || process.env["OPENCLAW_WEBHOOK_URL"]
+        || `http://localhost:${gatewayPort}`;
+      const webhookUrl = `${baseUrl}/api/agentpresence/inbound`;
+
+      try {
+        await chatRegisterWebhook(webhookUrl, chatWebhookSecret);
+        chatWebhookRegistered = true;
+        api.logger.info(`agentpresence chat: webhook registered at ${webhookUrl}`);
+
+        // Send welcome message
+        await chatPostMessage(
+          "Hey! 👋 I'm now connected to this chat. You can ask me anything about our social presence — review posts, update the corpus, adjust strategy, or brainstorm content ideas. I can read and change everything in this dashboard.",
+          "Novalystrix"
+        );
+        api.logger.info("agentpresence chat: welcome message sent");
+      } catch (err) {
+        api.logger.error(`agentpresence chat: failed to register webhook: ${err}`);
+      }
+    },
+    async stop() {
+      chatWebhookRegistered = false;
+    },
+  });
+
+  // Hook: when the agent sends a message in response to a chat message, post it back
+  api.registerHook("message_sending", async (ctx: any) => {
+    // Only intercept if the message originated from agentpresence chat
+    if (!chatWebhookRegistered || !getApiConfig()) return;
+
+    // Check if this is a response to an Agent Presence chat message
+    const sessionKey = ctx.sessionKey ?? ctx.session?.key;
+    const sourceMatch = ctx.source === "agentpresence-chat"
+      || ctx.inboundSource === "agentpresence-chat"
+      || (ctx.text && ctx.lastInboundSource === "agentpresence-chat");
+
+    if (!sourceMatch) return;
+
+    const text = ctx.text || ctx.message;
+    if (!text || text === "NO_REPLY" || text === "HEARTBEAT_OK") return;
+
+    try {
+      await chatPostMessage(text, "Novalystrix");
+      api.logger.info(`agentpresence chat: posted response (${text.length} chars)`);
+    } catch (err) {
+      api.logger.error(`agentpresence chat: failed to post response: ${err}`);
+    }
+  });
+
 }
