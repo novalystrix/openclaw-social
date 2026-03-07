@@ -3,7 +3,10 @@
   "name": "OpenClaw Social",
   "version": "1.2.0",
   "description": "Social media presence management — posting, engagement tracking, personality coaching, and real-time tweet watching. Connects to Social Activity web app for team review.",
-  "skills": ["skills/social-presence", "skills/influencers"],
+  "skills": [
+    "skills/social-presence",
+    "skills/influencers"
+  ],
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
@@ -39,10 +42,28 @@
     }
   },
   "uiHints": {
-    "appUrl": { "label": "Social Activity App URL", "placeholder": "https://social-activity-b2xc.onrender.com" },
-    "apiKey": { "label": "Bot API Key", "sensitive": true, "placeholder": "sa_..." },
-    "accountId": { "label": "Account ID", "placeholder": "acc-..." },
-    "watchIntervalMs": { "label": "Watch Interval (ms)", "placeholder": "600000" },
-    "notifySessionKey": { "label": "Notify Session Key", "placeholder": "main" }
-  }
+    "appUrl": {
+      "label": "Social Activity App URL",
+      "placeholder": "https://social-activity-b2xc.onrender.com"
+    },
+    "apiKey": {
+      "label": "Bot API Key",
+      "sensitive": true,
+      "placeholder": "sa_..."
+    },
+    "accountId": {
+      "label": "Account ID",
+      "placeholder": "acc-..."
+    },
+    "watchIntervalMs": {
+      "label": "Watch Interval (ms)",
+      "placeholder": "600000"
+    },
+    "notifySessionKey": {
+      "label": "Notify Session Key",
+      "placeholder": "main"
+    }
+  },
+  "postInstall": "Run: bash scripts/setup.sh — creates the data/ directory structure for scan results and local caches.",
+  "dataDir": "data/ — scan results, post queues, and SQLite rate limiter. Cron jobs write here; content writer reads from here. Do NOT use workspace files for scan output."
 }
